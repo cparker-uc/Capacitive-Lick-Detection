@@ -46,6 +46,10 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map):
                                 sensor_data['time_data'][0]
                         )
                 )
+                if 'stop_vol' in sensor_data.keys():
+                    sensor_data['consumed_vol'] = (
+                        sensor_data['start_vol'] - sensor_data['stop_vol']
+                    )
                 continue
             else:
                 start_idx = np.argmin(
@@ -106,7 +110,7 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map):
     # Trying a mix of using raw trace and Hilbert envelope to find licks
     for (animal, data) in data_by_animal.items():
         # if animal in ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']: continue
-        if animal != 'A9': continue
+        # if animal != 'A9': continue
         fs = data['fs']
         trace = data['cap_data']
 
