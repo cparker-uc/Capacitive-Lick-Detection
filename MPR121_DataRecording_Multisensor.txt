@@ -20,7 +20,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 1,
    "metadata": {
     "scrolled": true
    },
@@ -107,16 +107,6 @@
     "\n",
     "# Filename for saving data (placeholder, will be set below)\n",
     "filename = \"\""
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 3,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "# Ensure we have a directory to store error logs\n",
-    "os.mkdir('logs')"
    ]
   },
   {
@@ -253,7 +243,6 @@
     "        print(f\"Device with serial {sn} controls sensors: {sensors}\")\n",
     "    except KeyError as e:\n",
     "        print(f\"No device with serial {str(e)} found\")\n",
-    "        \n",
     "        continue"
    ]
   },
@@ -374,7 +363,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 11,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -412,9 +401,6 @@
     "        for row in sensor_rows.children:\n",
     "            # row will be an HBox containing GridBoxes\n",
     "            for grid in row.children:\n",
-    "                start_vol = stop_vol = weight = None\n",
-    "                sensor_id = None\n",
-    "                sn = None\n",
     "                for w in grid.children:\n",
     "                    # For each child widget in the grid, check if it's the toggle button\n",
     "                    # if it is, set it to stop\n",
@@ -434,9 +420,6 @@
     "                            weight = w.value\n",
     "                    else:\n",
     "                        continue\n",
-    "                if None in (start_vol, stop_vol, weight, sensor_id, sn):\n",
-    "                    with open(f'logs/{filename[:-3]}.log', 'a') as lf:\n",
-    "                        lf.write(f\"{(start_vol, stop_vol, weight, sensor_id, sn)=}\\n\\n\")\n",
     "                with h5py.File(filename, \"r+\") as raw_h5f:\n",
     "                    # Try/except here in case the user never started/stopped some sensor and a group\n",
     "                    # was never created for it.\n",
@@ -444,8 +427,6 @@
     "                        _ = raw_h5f[f\"board_{sn}\"]\n",
     "                    except KeyError as e:\n",
     "                        print(f\"KeyError: {e}\")\n",
-    "                        with open(f\"logs/{filename[:-3]}.log\", 'a') as lf:\n",
-    "                            lf.write(f\"KeyError: {e}, {sn=}, {sensor_id=}\\n\")\n",
     "                        continue\n",
     "                    try:\n",
     "                        raw_h5f[f\"board_{sn}\"][f\"sensor_{sensor_id}\"].create_dataset(\"start_vol\", data = start_vol)\n",
@@ -515,8 +496,6 @@
     "                except ValueError as e:\n",
     "                    stop_except_ctr += 1\n",
     "                    print(\"Attempted to re-record the stop time after it has been set\")\n",
-    "                    with open(f\"logs/{filename[:-3]}.log\", 'a') as lf:\n",
-    "                        lf.write(f\"Attempted to re-record the stop time. Caught ValueError: {e}, {sn=}, {sensor_id=}\")\n",
     "                    h5f[f\"board_{sn}\"][f\"sensor_{sensor_id}\"].create_dataset(f\"stop_time{stop_except_ctr}\", data=time.time())\n",
     "\n",
     "\n",

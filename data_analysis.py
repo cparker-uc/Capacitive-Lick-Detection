@@ -130,7 +130,7 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map):
         env_mask = env > env_thr
 
         # Where the value decreases from one point to the next
-        downs = np.where((trace[:-1] > trace[1:]))[0] + 1
+        downs = np.where((trace[:-1] > trace[1:] + 15))[0] + 1
 
         # Apply envelope mask
         candidates = [i for i in downs if env_mask[i]]
