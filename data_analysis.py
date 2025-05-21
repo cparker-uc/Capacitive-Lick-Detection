@@ -1,7 +1,7 @@
 # File Name: data_analysis.py
 # Author: Christopher Parker
 # Created: Thu May 08, 2025 | 11:48P EDT
-# Last Modified: Wed May 21, 2025 | 11:54P EDT
+# Last Modified: Wed May 21, 2025 | 12:12P EDT
 
 """Contains the data analysis functions to be called when the user stops
 a recording."""
