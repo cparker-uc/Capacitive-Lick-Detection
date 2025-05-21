@@ -1,7 +1,7 @@
 # File Name: data_analysis.py
 # Author: Christopher Parker
 # Created: Thu May 08, 2025 | 11:48P EDT
-# Last Modified: Thu May 08, 2025 | 01:48P EDT
+# Last Modified: Wed May 21, 2025 | 11:54P EDT
 
 """Contains the data analysis functions to be called when the user stops
 a recording."""
@@ -19,7 +19,7 @@ import scipy.optimize as sco
 from scipy.stats import pearsonr
 import ipywidgets as widgets
 
-def filter_data(raw_h5f, filtered_h5f, sensor_animal_map):
+def filter_data(raw_h5f, filtered_h5f, sensor_animal_map, logfile):
 
     data_dict = {}
     # We only expect up to 3 nested levels based on the DataRecording notebook
@@ -148,6 +148,12 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map):
         # convert to timestamps
         max_dist = int(0.5 * fs)
         lick_idxs_ = []
+        if len(lick_idxs) < 3:
+            data['lick_indices'] = []
+            data['lick_times'] = []
+            save_filtered_data(data, animal, filtered_h5f, logfile)
+            print(f'No licks recorded for {animal}')
+            continue
         for i, idx in enumerate(lick_idxs):
             # Only check to the right on the first loop and left on the last:
             if i == 0: 
@@ -187,15 +193,30 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map):
         # print(f"lick_times: {lick_times}")
         num_licks = len(lick_times)
         data['num_licks'] = num_licks
+        print(f"Animal {animal} had {num_licks} licks detected")
+        save_filtered_data(data, animal, filtered_h5f, logfile)
 
-        grp = filtered_h5f.create_group(animal)
-        grp.create_dataset('lick_times', data=lick_times)
-        grp.create_dataset('lick_indices', data=lick_idxs)
-
+def save_filtered_data(data, animal, filtered_h5f, logfile):
+    grp = filtered_h5f.create_group(animal)
+    # If we don't have lick indices, we won't have times
+    grp.create_dataset('lick_times', data=data['lick_times'])
+    grp.create_dataset('lick_indices', data=data['lick_indices'])
+    try:
+        grp.create_dataset('consumed_vol', data=data['consumed_vol'])
+    except KeyError as e:
+        with open(logfile, 'a') as lf:
+            lf.write(f"Caught KeyError {e}, volumes not recorded for {animal}\n")
+        print(f'Caught KeyError {e}, volumes were likely not recorded for {animal}')
+    try:
+        grp.create_dataset('weight', data=data['weight'])
+    except KeyError as e:
+        with open(logfile, 'a') as lf:
+            lf.write(f"Caught KeyError {e}, weight not recorded for {animal}\n")
+        print(f'Caught KeyError {e}, weight was likely not recorded for {animal}')
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #                                 MIT License                                 #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-#     Copyright (c) 2022 Christopher John Parker <parkecp@mail.uc.edu>        #
+#     Copyright (c) 2025 Christopher John Parker <parkecp@mail.uc.edu>        #
 #                                                                             #
 # Permission is hereby granted, free of charge, to any person obtaining a     #
 # copy of this software and associated documentation files (the "Software"),  #
@@ -216,4 +237,4 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map):
 # DEALINGS IN THE SOFTWARE.                                                   #
 #                                                                             #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-
+    
