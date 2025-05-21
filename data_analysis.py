@@ -33,7 +33,6 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map, logfile):
             if not isinstance(data_dict[k][k2], dict): continue
             for k3,v3 in v2.items():
                 data_dict[k][k2][k3] = v3[()]
-
     # Loop through all boards and sensors and truncate at start_time and
     # stop_time, then subtract the first time point from the data
     for board_id, board_data in data_dict.items():
