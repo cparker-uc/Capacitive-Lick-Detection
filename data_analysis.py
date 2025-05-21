@@ -37,6 +37,7 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map, logfile):
     # stop_time, then subtract the first time point from the data
     for board_id, board_data in data_dict.items():
         for sensor_id, sensor_data in board_data.items():
+            # If the user didn't press the start button for the sensor
             if 'start_time' not in sensor_data.keys():
                 sensor_data['fs'] = (
                         len(sensor_data['cap_data']) /
@@ -45,11 +46,11 @@ def filter_data(raw_h5f, filtered_h5f, sensor_animal_map, logfile):
                                 sensor_data['time_data'][0]
                         )
                 )
+                # But they still recorded volume for some reason
                 if 'stop_vol' in sensor_data.keys():
                     sensor_data['consumed_vol'] = (
                         sensor_data['start_vol'] - sensor_data['stop_vol']
                     )
-                continue
             else:
                 start_idx = np.argmin(
                     np.abs(
