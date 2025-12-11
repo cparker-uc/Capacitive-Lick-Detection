@@ -6,8 +6,13 @@ This repository contains the Python code for running our capacitive lickometry s
 
 ## Installation
 
-I haven't spent as much time making this easily installable as I'd like to yet, sorry! I manage my Python
-environments with pyenv-virtualenv on the command line: https://github.com/pyenv/pyenv-virtualenv
+I haven't spent as much time making this easily installable as I'd like to yet, sorry! 
+
+First, if you're on Windows (which is what we are using to make things easy on undergrads/grad students
+who need to run the system), you'll have to install drivers for the FT232H boards. The recommended 
+method is Zadig, and we roughly followed the steps outlined here: https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/windows
+
+Next, I manage my Python environments with pyenv-virtualenv on the command line: https://github.com/pyenv/pyenv-virtualenv
 
 To install the environment, I run:
 ```
